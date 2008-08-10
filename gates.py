@@ -45,6 +45,18 @@ def xor(a, b):
                 nand(~a, b))
 
 
+def test_mux():
+    a = Wire()
+    b = Wire()
+    sel = Wire()
+    out = mux(a, b, sel)
+    simtest.test(locals(), 'tests/1/Mux.tst')
+
+def mux(a, b, sel):
+    # TODO: use nands directly and save a few gates
+    return (~sel & a) | (sel & b)
+
+
 def main():
     for name, value in globals().items():
         if name.startswith('test'):
