@@ -30,7 +30,7 @@ def main():
         if name.startswith('test'):
             print name
             value()
+    print 'All tests passed.'
 
 if __name__ == '__main__':
     main()
-    print 'All tests passed.'
