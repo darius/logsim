@@ -1,7 +1,7 @@
 # SPOILER WARNING! HERE ARE SOLUTIONS TO THE CHAPTER 1 PROBLEMS.
 # DO NOT READ THIS IF YOU WANT TO SOLVE THEM FOR YOURSELF.
 
-from logsim import Wire, nand
+from logsim import Wire, nand, false
 import simtest
 
 
@@ -53,8 +53,21 @@ def test_mux():
     simtest.test(locals(), 'tests/1/Mux.tst')
 
 def mux(a, b, sel):
+    "if sel=0 then a else b"
     # TODO: use nands directly and save a few gates
     return (~sel & a) | (sel & b)
+
+
+def test_dmux():
+    in_ = Wire()
+    sel = Wire()
+    a, b = dmux(in_, sel)
+    simtest.test(locals(), 'tests/1/DMux.tst')
+
+def dmux(in_, sel):
+    "if sel=0 then (in,0) else (0,in)"
+    return (mux(in_, false, sel),
+            mux(false, in_, sel))
 
 
 def main():
@@ -62,7 +75,6 @@ def main():
         if name.startswith('test'):
             print name
             value()
-    print 'All tests passed.'
 
 if __name__ == '__main__':
     main()
