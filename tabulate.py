@@ -1,5 +1,7 @@
+import logsim
+
 def tabulate(in_wires, out_wires):
-    sim = Sim()
+    sim = logsim.Sim()
     for values in truth_table(in_wires):
         for wire, value in zip(in_wires, values):
             sim.set(wire, value)
@@ -19,10 +21,10 @@ def truth_table(wires):
             yield (1,) + values
 
 
-if False:
-    a = ns.Wire()
-    b = ns.Wire()
-    tabulate([a, b], [nand(a, b)])
+if True:
+    a = logsim.Wire()
+    b = logsim.Wire()
+    tabulate([a, b], [logsim.nand(a, b)])
     print ''
     tabulate([a, b], [a & b])
     print ''
