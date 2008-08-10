@@ -52,6 +52,13 @@ class Wire:
         import gates
         return gates.xor(self, other)
 
+# XXX Currently if you use these, you must make sure to connect them
+# to gates that will be scheduled for update by other wires. Ugh ugh ugh.
+true = Wire()
+true.value = True
+false = Wire()
+false.value = False
+
 class Nand:
     def __init__(self, in1, in2, out):
         initialize(locals())
