@@ -39,11 +39,18 @@ class Wire:
     def add_reader(self, gate):
         if gate not in self.readers:
             self.readers.append(gate)
-    def __invert__(self):     return nand(self, self)
-    def __and__(self, other): return ~nand(self, other)
-    def __or__(self, other):  return nand(~self, ~other)
-    def __xor__(self, other): return nand(nand(self, ~other),
-                                          nand(~self, other))
+    def __invert__(self):
+        import gates
+        return gates.not_(self)
+    def __and__(self, other):
+        import gates
+        return gates.and_(self, other)
+    def __or__(self, other):
+        import gates
+        return gates.or_(self, other)
+    def __xor__(self, other):
+        import gates
+        return gates.xor(self, other)
 
 class Nand:
     def __init__(self, in1, in2, out):
