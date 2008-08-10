@@ -1,0 +1,7 @@
+A basic logic simulator, just enough to do the problems in 
+_The Elements of Computing Systems_ by Nisan and Schocken,
+http://www1.idc.ac.il/tecs/
+
+The tests/ directory holds material from that book. Everything else is
+copyright 2008 Darius Bacon and distributed under the GNU Public
+License v3.
