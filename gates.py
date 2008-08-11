@@ -1,7 +1,8 @@
 # SPOILER WARNING! HERE ARE SOLUTIONS TO THE CHAPTER 1 PROBLEMS.
 # DO NOT READ THIS IF YOU WANT TO SOLVE THEM FOR YOURSELF.
 
-from logsim import Wire, nand, false
+import logsim
+from logsim import Wire, nand, false, wires
 import simtest
 
 
@@ -68,6 +69,16 @@ def dmux(in_, sel):
     "if sel=0 then (in,0) else (0,in)"
     return (mux(in_, false, sel),
             mux(false, in_, sel))
+
+
+def test_not16():
+    in_ = wires(16)
+    out = not16(in_)
+    simtest.test(locals(), 'tests/1/Not16.tst')
+
+def not16(in_):
+    "16-wide NOT"
+    return tuple(~w for w in in_)
 
 
 def main():
