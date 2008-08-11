@@ -13,7 +13,7 @@ class Sim:
         self.false = Wire()
         self.set(self.false, False)
     def set(self, wire, value):
-        wire.value = '?'
+        wire.value = '?'        # XXX only wanted on initialization
         self.pending[wire] = value
         # XXX detect conflicting writes (races)
     def run(self):
@@ -71,3 +71,6 @@ def nand(in1, in2):
     out = Wire()
     Nand(in1, in2, out)
     return out
+
+def wires(n):
+    return tuple(Wire() for i in range(n))

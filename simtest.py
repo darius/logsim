@@ -74,11 +74,14 @@ class Tester:
         return (label, int(lpadding), int(width), int(rpadding))
 
     def parse_set(self, label, literal):
-        self.sim.set(self.env[label], self.parse_literal(literal))
+        self.set(self.env[label], self.parse_literal(literal))
 
     def set(self, wire, value):
-        # XXX handle wire-lists
-        self.sim.set(wire, value)
+        if isinstance(wire, tuple):
+            for w, v in tupleize(wire, value):
+                self.set(w, v)
+        else:
+            self.sim.set(wire, value)
 
     def parse_literal(self, literal):
         if literal.startswith('%B'):
@@ -93,9 +96,22 @@ class Tester:
         self.sim.run()
 
     def output(self):
-        x = [(self.env[label].value, lpadding, width, rpadding)
+        x = [(var_value(self.env[label]), lpadding, width, rpadding)
              for (label, lpadding, width, rpadding) in self.output_specs]
         write_list(self.out, x)
+
+def var_value(v):
+    if isinstance(v, tuple):
+        return tuple(map(var_value, v))
+    return v.value
+
+def tupleize(wires, value):
+    assert isinstance(value, int)
+    if not wires:
+        assert value == 0
+        return []
+    t = tupleize(wires[:-1], value // 2)
+    return t + [(wires[-1], 1 & value)]
 
 
 def write_list(out, specs):
@@ -105,21 +121,26 @@ def write_list(out, specs):
     out.write('\n')
 
 def output_spec(out, value, lpadding, width, rpadding):
-    if isinstance(value, str):
-        pass
-    elif isinstance(value, bool):
-        value = str(int(value))
-    elif isinstance(value, int):
-        value = base2(value)
-    else:
-        print value
-        raise 'wtf?'
+    value = to_string(value)
     if False:
         out.write('%s%s%s|' % (spaces(lpadding), 
                                center(width, value),
                                spaces(rpadding)))
     else:
         out.write('%s|' % center(lpadding + width + rpadding, value))
+
+def to_string(value):
+    if isinstance(value, str):
+        return value
+    elif isinstance(value, bool):
+        return str(int(value))
+    elif isinstance(value, int):
+        return base2(value)
+    elif isinstance(value, tuple):
+        return ''.join(map(to_string, value))
+    else:
+        print value
+        raise 'wtf?'
 
 def base2(n):
     assert 0 <= n
