@@ -126,7 +126,7 @@ def write_list(out, specs):
     out.write('|')
     for spec in specs:
         output_spec(out, *spec)
-    out.write('\n')
+    out.write('\r\n')
 
 def output_spec(out, value, lpadding, width, rpadding):
     value = to_string(value)
