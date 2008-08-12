@@ -115,12 +115,11 @@ def var_value(v):
 
 def tupleize(wires, value):
     assert isinstance(value, int)
-    if not wires:
-        assert value == 0
-        return []
-    t = tupleize(wires[:-1], value // 2)
-    return t + [(wires[-1], 1 & value)]
-
+    out = []
+    for w in wires:
+        out.append((w, value & 1))
+        value >>= 1
+    return out
 
 def write_list(out, specs):
     out.write('|')
@@ -145,7 +144,7 @@ def to_string(value):
     elif isinstance(value, int):
         return base2(value)
     elif isinstance(value, tuple):
-        return ''.join(map(to_string, value))
+        return ''.join(reversed(map(to_string, value)))
     else:
         print value
         raise 'wtf?'

@@ -47,8 +47,7 @@ def xor(a, b):
 
 
 def test_mux():
-    a = Wire()
-    b = Wire()
+    a, b = wires(2)
     sel = Wire()
     out = mux(a, b, sel)
     simtest.test(locals(), 'tests/1/Mux.tst')
@@ -66,7 +65,7 @@ def test_dmux():
     simtest.test(locals(), 'tests/1/DMux.tst')
 
 def dmux(in_, sel):
-    "if sel=0 then (in,0) else (0,in)"
+    "if sel=0 then 0/in else in/0"
     return (mux(in_, false, sel),
             mux(false, in_, sel))
 
@@ -139,9 +138,9 @@ def test_mux4way16():
 def mux4way16(a, b, c, d, sel):
     assert (16, 16, 16, 16) == (len(a), len(b), len(c), len(d))
     assert 2 == len(sel)
-    return mux16(mux16(a, b, sel[1]),
-                 mux16(c, d, sel[1]),
-                 sel[0])
+    return mux16(mux16(a, b, sel[0]),
+                 mux16(c, d, sel[0]),
+                 sel[1])
 
 
 def test_mux8way16():
@@ -160,9 +159,9 @@ def test_mux8way16():
 def mux8way16(a, b, c, d, e, f, g, h, sel):
     assert [16] * 8 == map(len, [a, b, c, d, e, f, g, h])
     assert 3 == len(sel)
-    return mux16(mux4way16(a, b, c, d, sel[1:]),
-                 mux4way16(e, f, g, h, sel[1:]),
-                 sel[0])
+    return mux16(mux4way16(a, b, c, d, sel[:2]),
+                 mux4way16(e, f, g, h, sel[:2]),
+                 sel[2])
 
 
 def test_dmux4way():
@@ -172,10 +171,10 @@ def test_dmux4way():
     simtest.test(locals(), 'tests/1/DMux4way.tst')
 
 def dmux4way(in_, sel):
-    "if sel=00 then (in,0,0,0) else ... if sel=11 then (0,0,0,in)"
+    "if sel=00 then 000/in else ... if sel=11 then in/000"
     assert 2 == len(sel)
-    w0, w1 = dmux(in_, sel[0])
-    return dmux(w0, sel[1]) + dmux(w1, sel[1])
+    w0, w1 = dmux(in_, sel[1])
+    return dmux(w0, sel[0]) + dmux(w1, sel[0])
 
 
 def test_dmux8way():
@@ -185,11 +184,11 @@ def test_dmux8way():
     simtest.test(locals(), 'tests/1/DMux8way.tst')
 
 def dmux8way(in_, sel):
-    """if sel=000 then (in,0,0,0,0,0,0,0) else ...
-       if sel=111 then (0,0,0,0,0,0,0,in)"""
+    """if sel=000 then 0000000/in else ...
+       if sel=111 then in/0000000"""
     assert 3 == len(sel)
-    w0, w1 = dmux(in_, sel[0])
-    return dmux4way(w0, sel[1:]) + dmux4way(w1, sel[1:])
+    w0, w1 = dmux(in_, sel[2])
+    return dmux4way(w0, sel[:2]) + dmux4way(w1, sel[:2])
 
 
 if __name__ == '__main__':
