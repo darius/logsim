@@ -5,6 +5,14 @@ import sys
 import logsim
 
 
+def main(dictlike):
+    "Use like simtest.main(globals()) to run all the tests in your module."
+    for name, value in dictlike.items():
+        if name.startswith('test'):
+            print name
+            value()
+
+
 def test(env, filename):
     Tester(bowdlerize(env)).run(open(filename))
 

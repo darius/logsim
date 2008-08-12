@@ -192,11 +192,5 @@ def dmux8way(in_, sel):
     return dmux4way(w0, sel[1:]) + dmux4way(w1, sel[1:])
 
 
-def main():
-    for name, value in globals().items():
-        if name.startswith('test'):
-            print name
-            value()
-
 if __name__ == '__main__':
-    main()
+    simtest.main(globals())
