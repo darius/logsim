@@ -1,7 +1,7 @@
 def power_up():
     agenda.clear()
-    initialize(false, 0)
-    initialize(true, 1)
+    initialize(lo, 0)
+    initialize(hi, 1)
 
 agenda = {}
 
@@ -49,14 +49,17 @@ def DeferredWire():
     wire.value = '?'
     return wire
 
-false, true = Wire(), Wire()   # XXX too error-prone!
+lo, hi = Wire(), Wire()
 
 def nand(in1, in2):
     out = Wire()
     def propagate(agenda, coarse_agenda):
-        agenda[out] = (True if False in (in1.value, in2.value) 
+        # nand(a, b) is just (not (a and b)), but an input may be
+        # undetermined ('?'). Also the output is sometimes determined
+        # even given one '?' input (when the other is 0).
+        agenda[out] = (1 if not in1.value or not in2.value
                        else '?' if '?' in (in1.value, in2.value)
-                       else False)
+                       else 0)
     in1.acquaint(propagate)
     in2.acquaint(propagate)
     return out
@@ -80,13 +83,13 @@ if False:
     feedback.resolve(c)
 
     power_up(); print 0, c.value
-    initialize(a, false)
+    initialize(a, 0)
     ticktock(); print 1, c.value
-    initialize(a, true)
+    initialize(a, 1)
     ticktock(); print 2, c.value
-    initialize(a, false)
+    initialize(a, 0)
     ticktock(); print 3, c.value
-    initialize(a, true)
+    initialize(a, 1)
     ticktock(); print 4, c.value
 
 if False:
@@ -101,10 +104,10 @@ load = Wire()
 inp = Wire()
 a = nand(load, inp)
 power_up(); print 0, a.value
-initialize(load, False)
-initialize(inp, False)
+initialize(load, 0)
+initialize(inp, 0)
 ticktock(); print 1, a.value
-initialize(load, True)
+initialize(load, 1)
 ticktock(); print 2, a.value
 print
 
