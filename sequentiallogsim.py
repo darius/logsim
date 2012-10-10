@@ -29,33 +29,44 @@ class Sim:
             fine_agenda = new_agenda
         self.agenda = coarse_agenda
 
-def Wire():
-    def wire(new_value):
-        if wire.value == new_value: return set()
-        wire.value = new_value
-        return readers
-    readers = set()
-    wire.acquaint = readers.add
-    wire.value = '?'
-    return wire
+class Wire:
 
-def DeferredWire():
-    def wire(new_value):
+    def __init__(self):
+        self.value = '?'
+        self.readers = set()
+
+    def __call__(self, new_value):
+        if self.value == new_value: return set()
+        self.value = new_value
+        return self.readers
+
+    def acquaint(self, reader):
+        self.readers.add(reader)
+
+class DeferredWire:
+
+    def __init__(self):
+        self.value = '?'
+        self.readers = set()
+        self.wire = None
+
+    def __call__(self, new_value):
         assert False, "You directly set a deferred wire."
-    def set_me(new_value):
-        wire.value = new_value
-        return readers
-    def resolve(resolution):
-        assert not resolve.resolved; resolve.resolved = True
-        def propagate(agenda, coarse_agenda):
-            agenda[set_me] = resolution.value
-        resolution.acquaint(propagate)
-    resolve.resolved = False
-    wire.resolve = resolve
-    readers = set()
-    wire.acquaint = readers.add
-    wire.value = '?'
-    return wire
+
+    def acquaint(self, reader):
+        self.readers.add(reader)
+
+    def resolve(self, resolution):
+        assert self.wire is None, "DeferredWire already resolved"
+        self.wire = resolution
+        resolution.acquaint(self._propagate)
+
+    def _propagate(self, agenda, coarse_agenda):
+        agenda[self._set_me] = self.wire.value
+
+    def _set_me(self, new_value):
+        self.value = new_value
+        return self.readers
 
 def nand(in1, in2):
     out = Wire()
