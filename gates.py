@@ -2,7 +2,7 @@
 # DO NOT READ THIS IF YOU WANT TO SOLVE THEM FOR YOURSELF.
 
 import logsim
-from logsim import Wire, nand, false, wires
+from logsim import Wire, nand, wires, lo
 import simtest
 
 
@@ -66,8 +66,8 @@ def test_dmux():
 
 def dmux(in_, sel):
     "if sel=0 then 0/in else in/0"
-    return (mux(in_, false, sel),
-            mux(false, in_, sel))
+    return (mux(in_, lo, sel),
+            mux(lo, in_, sel))
 
 
 def test_not16():

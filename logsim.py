@@ -1,44 +1,50 @@
-def initialize(entries):
-    "Helper for __init__ methods."
-    entries['self'].__dict__.update((key, value) 
-                                    for key, value in entries.items()
-                                    if key != 'self')
-
+"""
+Basic components of a circuit, and simulating their behavior.
+"""
 
 class Sim:
-    def __init__(self):
-        self.pending = {}
-        self.true = Wire()
-        self.set(self.true, True)
-        self.false = Wire()
-        self.set(self.false, False)
-    def set(self, wire, value):
-        wire.value = '?'        # XXX only wanted on initialization
-        self.pending[wire] = value
-        # XXX detect conflicting writes (races)
-    def run(self):
-        while self.pending:
-            self.pending = step(self.pending)
 
-def step(pending):
-    dirty = set()
-    for w, new_value in pending.items():
-        if w.value != new_value:
-            w.value = new_value
-            for gate in w.readers:
-                dirty.add(gate)
-    new_pending = {}
-    for gate in dirty:
-        gate.run(new_pending)
-    return new_pending
+    def __init__(self):
+        self.agenda = {}
+        self.power_up()
+
+    def power_up(self):
+        self.agenda.clear()
+        self.initialize(lo, 0)
+        self.initialize(hi, 1)
+
+    def initialize(self, wire, value):
+        wire.value = '?'
+        self.agenda[wire] = value
+
+    def ticktock(self):
+        fine_agenda = self.agenda
+        coarse_agenda = {}
+        while fine_agenda:
+            dirty = set().union(*[wire(new_value) for wire, new_value in fine_agenda.items()])
+            new_agenda = {}
+            for gate in dirty:
+                gate(new_agenda, coarse_agenda)
+            fine_agenda = new_agenda
+        self.agenda = coarse_agenda
+
+    # XXX should this be a separate method?
+    set = initialize
 
 class Wire:
+
     def __init__(self):
-        self.readers = []
         self.value = '?'
-    def add_reader(self, gate):
-        if gate not in self.readers:
-            self.readers.append(gate)
+        self.readers = set()
+
+    def __call__(self, new_value):
+        if self.value == new_value: return set()
+        self.value = new_value
+        return self.readers
+
+    def acquaint(self, reader):
+        self.readers.add(reader)
+
     def __invert__(self):
         import gates
         return gates.not_(self)
@@ -52,25 +58,49 @@ class Wire:
         import gates
         return gates.xor(self, other)
 
-# XXX Currently if you use these, you must make sure to connect them
-# to gates that will be scheduled for update by other wires. Ugh ugh ugh.
-true = Wire()
-true.value = True
-false = Wire()
-false.value = False
 
-class Nand:
-    def __init__(self, in1, in2, out):
-        initialize(locals())
-        in1.add_reader(self)
-        in2.add_reader(self)
-    def run(self, pending):
-        pending[self.out] = not (self.in1.value and self.in2.value)
+class DeferredWire(Wire):
+
+    def __init__(self):
+        Wire.__init__(self)
+        self.wire = None
+
+    def __call__(self, new_value):
+        assert False, "You directly set a deferred wire."
+
+    def resolve(self, resolution):
+        assert self.wire is None, "DeferredWire already resolved"
+        self.wire = resolution
+        resolution.acquaint(self._propagate)
+
+    def _propagate(self, agenda, coarse_agenda):
+        agenda[self._set_me] = self.wire.value
+
+    def _set_me(self, new_value):
+        self.value = new_value
+        return self.readers
 
 def nand(in1, in2):
     out = Wire()
-    Nand(in1, in2, out)
+    def propagate(agenda, coarse_agenda):
+        # nand(a, b) is just (not (a and b)), but an input may be
+        # undetermined ('?'). Also the output is sometimes determined
+        # even given one '?' input (when the other is 0).
+        agenda[out] = (1 if not in1.value or not in2.value
+                       else '?' if '?' in (in1.value, in2.value)
+                       else 0)
+    in1.acquaint(propagate)
+    in2.acquaint(propagate)
+    return out
+
+def DFF(in_):
+    out = Wire()
+    def propagate(agenda, coarse_agenda):
+        coarse_agenda[out] = in_.value # XXX test me more
+    in_.acquaint(propagate)
     return out
 
 def wires(n):
     return tuple(Wire() for i in range(n))
+
+lo, hi = wires(2)

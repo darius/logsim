@@ -1,4 +1,4 @@
-from sequentiallogsim import *
+from logsim import *
 
 sim = Sim()
 

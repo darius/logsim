@@ -101,7 +101,7 @@ class Tester:
         write_list(self.out, specs)
 
     def eval(self):
-        self.sim.run()
+        self.sim.ticktock()
 
     def output(self):
         x = [(var_value(self.env[label]), lpadding, width, rpadding)

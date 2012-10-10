@@ -4,8 +4,8 @@ def tabulate(in_wires, out_wires):
     sim = logsim.Sim()
     for values in truth_table(in_wires):
         for wire, value in zip(in_wires, values):
-            sim.set(wire, value)
-        sim.run()
+            sim.initialize(wire, value)
+        sim.ticktock()
         print ' '.join(map(str, wire_values(in_wires) + wire_values(out_wires)))
 
 def wire_values(wires):

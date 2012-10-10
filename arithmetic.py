@@ -73,7 +73,7 @@ def test_alu():
 def alu(x, y, zx, nx, zy, ny, f, no):
     "Return out, zr, ng."
     assert (16, 16) == (len(x), len(y))
-    zeroes = (logsim.false,) * 16
+    zeroes = (logsim.lo,) * 16
     x0 = gates.mux16(x, zeroes, zx)
     x1 = gates.mux16(x0, gates.not16(x0), nx)
     y0 = gates.mux16(y, zeroes, zy)
