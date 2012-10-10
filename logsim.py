@@ -6,27 +6,46 @@ class Sim:
 
     def __init__(self):
         self.agenda = {}
+        self.tock_agenda = {}
         self.power_up()
+
+    def get_time(self):
+        return '%s%s' % (self.time, self.phase)
 
     def power_up(self):
         self.agenda.clear()
         self.initialize(lo, 0)
         self.initialize(hi, 1)
+        self.time = 0
+        self.phase = '+'
 
     def initialize(self, wire, value):
         wire.value = '?'
         self.agenda[wire] = value
 
     def ticktock(self):
-        fine_agenda = self.agenda
-        coarse_agenda = {}
-        while fine_agenda:
-            dirty = set().union(*[wire(new_value) for wire, new_value in fine_agenda.items()])
-            new_agenda = {}
+        self.propagate()
+        self.agenda.update(self.tock_agenda)
+        self.tock_agenda.clear()
+        self.time += 1
+
+    def tick(self):
+        self.propagate()
+        self.phase = '+'
+
+    def tock(self):
+        self.agenda.update(self.tock_agenda)
+        self.tock_agenda.clear()
+        self.propagate()
+        self.time += 1
+        self.phase = ' '
+
+    def propagate(self):
+        while self.agenda:
+            dirty = set().union(*[wire(new_value) for wire, new_value in self.agenda.items()])
+            self.agenda = {}
             for gate in dirty:
-                gate(new_agenda, coarse_agenda)
-            fine_agenda = new_agenda
-        self.agenda = coarse_agenda
+                gate(self.agenda, self.tock_agenda)
 
     # XXX should this be a separate method?
     set = initialize

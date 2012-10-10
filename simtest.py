@@ -67,9 +67,12 @@ class Tester:
             self.eval()
         elif words[0] == 'output':
             self.output()
+        elif words[0] == 'tick':
+            self.tick()
+        elif words[0] == 'tock':
+            self.tock()
         else:
-            print words
-            raise 'syntax error'
+            raise Exception('Syntax error', words)
 
     def parse_output_list(self, spec_strings):
         self.output_list(map(self.parse_output_spec, spec_strings))
@@ -77,9 +80,16 @@ class Tester:
     def parse_output_spec(self, spec_string):
         label, rest = spec_string.split('%')
         base = rest[0]
-        assert base == 'B'      # XXX
-        lpadding, width, rpadding = rest[1:].split('.')
-        return (label, int(lpadding), int(width), int(rpadding))
+        assert base in 'BS', spec_string      # XXX
+        lpadding, width, rpadding = map(int, rest[1:].split('.'))
+        if base == 'B':
+            def format(value):
+                return center(lpadding + width + rpadding, value)
+        elif base == 'S':
+            def format(value):
+                s = str(value)
+                return spaces(lpadding) + s + spaces(rpadding + (width - len(s)))
+        return label, format
 
     def parse_set(self, label, literal):
         self.set(self.env[label], self.parse_literal(literal))
@@ -103,14 +113,26 @@ class Tester:
     def eval(self):
         self.sim.ticktock()
 
+    def tick(self):
+        self.sim.tick()
+
+    def tock(self):
+        self.sim.tock()
+
     def output(self):
-        x = [(var_value(self.env[label]), lpadding, width, rpadding)
-             for (label, lpadding, width, rpadding) in self.output_specs]
+        self.env['time'] = FakeWire(self.sim.get_time())
+        x = [(var_value(self.env[label]), format)
+             for (label, format) in self.output_specs]
         write_list(self.out, x)
+
+class FakeWire:
+    def __init__(self, value):
+        self.value = value
 
 def var_value(v):
     if isinstance(v, tuple):
         return tuple(map(var_value, v))
+    if v.value == '?': return '0'  # XXX hack to make DFF outputs conform to the book
     return v.value
 
 def tupleize(wires, value):
@@ -123,18 +145,9 @@ def tupleize(wires, value):
 
 def write_list(out, specs):
     out.write('|')
-    for spec in specs:
-        output_spec(out, *spec)
+    for value, format in specs:
+        out.write('%s|' % format(to_string(value)))
     out.write('\r\n')
-
-def output_spec(out, value, lpadding, width, rpadding):
-    value = to_string(value)
-    if False:
-        out.write('%s%s%s|' % (spaces(lpadding), 
-                               center(width, value),
-                               spaces(rpadding)))
-    else:
-        out.write('%s|' % center(lpadding + width + rpadding, value))
 
 def to_string(value):
     if isinstance(value, str):
@@ -146,8 +159,7 @@ def to_string(value):
     elif isinstance(value, tuple):
         return ''.join(reversed(map(to_string, value)))
     else:
-        print value
-        raise 'wtf?'
+        raise Exception('wtf?', value)
 
 def base2(n):
     assert 0 <= n
