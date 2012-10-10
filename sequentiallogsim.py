@@ -43,18 +43,14 @@ class Wire:
     def acquaint(self, reader):
         self.readers.add(reader)
 
-class DeferredWire:
+class DeferredWire(Wire):
 
     def __init__(self):
-        self.value = '?'
-        self.readers = set()
+        Wire.__init__(self)
         self.wire = None
 
     def __call__(self, new_value):
         assert False, "You directly set a deferred wire."
-
-    def acquaint(self, reader):
-        self.readers.add(reader)
 
     def resolve(self, resolution):
         assert self.wire is None, "DeferredWire already resolved"
