@@ -6,13 +6,12 @@ class Sim:
 
     def __init__(self):
         self.agenda = {}
-        self.lo, self.hi = Wire(), Wire()
         self.power_up()
 
     def power_up(self):
         self.agenda.clear()
-        self.initialize(self.lo, 0)
-        self.initialize(self.hi, 1)
+        self.initialize(lo, 0)
+        self.initialize(hi, 1)
 
     def initialize(self, wire, value):
         wire.value = '?'
@@ -42,6 +41,20 @@ class Wire:
 
     def acquaint(self, reader):
         self.readers.add(reader)
+
+    def __invert__(self):
+        import gates
+        return gates.not_(self)
+    def __and__(self, other):
+        import gates
+        return gates.and_(self, other)
+    def __or__(self, other):
+        import gates
+        return gates.or_(self, other)
+    def __xor__(self, other):
+        import gates
+        return gates.xor(self, other)
+
 
 class DeferredWire(Wire):
 
@@ -83,3 +96,8 @@ def DFF(in_):
         coarse_agenda[out] = in_.value # XXX test me more
     in_.acquaint(propagate)
     return out
+
+def wires(n):
+    return tuple(Wire() for i in range(n))
+
+lo, hi = wires(2)
