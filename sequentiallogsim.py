@@ -78,44 +78,6 @@ def DFF(in_):
 
 ##############################################################
 
-if False:
-
-    a = Wire()
-    feedback = DeferredWire()
-    b = nand(a, feedback)
-    c = DFF(b)
-    feedback.resolve(c)
-
-    power_up(); print 0, c.value
-    initialize(a, 0)
-    ticktock(); print 1, c.value
-    initialize(a, 1)
-    ticktock(); print 2, c.value
-    initialize(a, 0)
-    ticktock(); print 3, c.value
-    initialize(a, 1)
-    ticktock(); print 4, c.value
-
-if False:
-    a = Wire()
-    b = nand(a, a)
-    power_up(); print 0, a.value, b.value
-    initialize(a, True)
-    ticktock(); print 1, a.value, b.value
-    print
-
-load = Wire()
-inp = Wire()
-a = nand(load, inp)
-power_up(); print 0, a.value
-initialize(load, 0)
-initialize(inp, 0)
-ticktock(); print 1, a.value
-initialize(load, 1)
-ticktock(); print 2, a.value
-print
-
-
 load = Wire()
 inp = Wire()
 out_ = DeferredWire()
