@@ -80,7 +80,7 @@ class Tester:
     def parse_output_spec(self, spec_string):
         label, rest = spec_string.split('%')
         base = rest[0]
-        assert base in 'BS', spec_string      # XXX
+        assert base in 'BS', spec_string
         lpadding, width, rpadding = map(int, rest[1:].split('.'))
         if base == 'B':
             def format(value):
