@@ -94,7 +94,7 @@ d = nand(b, c)
 out = DFF(d)
 out_.resolve(out)
 
-sim.power_up(); print 0, a.value, b.value, c.value, d.value, out.value, out_.value
+print 0, a.value, b.value, c.value, d.value, out.value, out_.value
 sim.initialize(load, False)
 sim.initialize(inp, False)
 sim.ticktock(); print 1, a.value, b.value, c.value, d.value, out.value, out_.value
