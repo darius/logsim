@@ -1,3 +1,8 @@
+"""
+Tabulate all possible inputs to a combinational circuit, together
+with its output in each case.
+"""
+
 import logsim
 
 def tabulate(in_wires, out_wires):

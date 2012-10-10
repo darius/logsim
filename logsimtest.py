@@ -1,3 +1,7 @@
+"""
+A smoke test for sequential circuit simulation.
+"""
+
 from logsim import *
 
 sim = Sim()

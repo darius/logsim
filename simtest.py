@@ -1,3 +1,7 @@
+"""
+Run tests against the test scripts from TECS (*.tst and *.cmp).
+"""
+
 import os
 import re
 import sys
