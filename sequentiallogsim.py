@@ -2,28 +2,32 @@
 Basic components of a circuit, and simulating their behavior.
 """
 
-def power_up():
-    agenda.clear()
-    initialize(lo, 0)
-    initialize(hi, 1)
+class Sim:
 
-agenda = {}
+    def __init__(self):
+        self.agenda = {}
+        self.lo, self.hi = Wire(), Wire()
+        self.power_up()
 
-def initialize(wire, value):
-    wire.value = '?'
-    agenda[wire] = value
+    def power_up(self):
+        self.agenda.clear()
+        self.initialize(self.lo, 0)
+        self.initialize(self.hi, 1)
 
-def ticktock():
-    global agenda
-    fine_agenda = agenda
-    coarse_agenda = {}
-    while fine_agenda:
-        dirty = set().union(*[wire(new_value) for wire, new_value in fine_agenda.items()])
-        new_agenda = {}
-        for gate in dirty:
-            gate(new_agenda, coarse_agenda)
-        fine_agenda = new_agenda
-    agenda = coarse_agenda
+    def initialize(self, wire, value):
+        wire.value = '?'
+        self.agenda[wire] = value
+
+    def ticktock(self):
+        fine_agenda = self.agenda
+        coarse_agenda = {}
+        while fine_agenda:
+            dirty = set().union(*[wire(new_value) for wire, new_value in fine_agenda.items()])
+            new_agenda = {}
+            for gate in dirty:
+                gate(new_agenda, coarse_agenda)
+            fine_agenda = new_agenda
+        self.agenda = coarse_agenda
 
 def Wire():
     def wire(new_value):
@@ -53,8 +57,6 @@ def DeferredWire():
     wire.value = '?'
     return wire
 
-lo, hi = Wire(), Wire()
-
 def nand(in1, in2):
     out = Wire()
     def propagate(agenda, coarse_agenda):
@@ -78,6 +80,8 @@ def DFF(in_):
 
 ##############################################################
 
+sim = Sim()
+
 load = Wire()
 inp = Wire()
 out_ = DeferredWire()
@@ -90,18 +94,17 @@ d = nand(b, c)
 out = DFF(d)
 out_.resolve(out)
 
-power_up(); print 0, a.value, b.value, c.value, d.value, out.value, out_.value
-initialize(load, False)
-initialize(inp, False)
-ticktock(); print 1, a.value, b.value, c.value, d.value, out.value, out_.value
-initialize(load, True)
-ticktock(); print 2, a.value, b.value, c.value, d.value, out.value, out_.value
-initialize(load, False)
-ticktock(); print 3, a.value, b.value, c.value, d.value, out.value, out_.value
-initialize(load, True)
-initialize(inp, True)
-ticktock(); print 4, a.value, b.value, c.value, d.value, out.value, out_.value
-initialize(load, False)
-ticktock(); print 5, a.value, b.value, c.value, d.value, out.value, out_.value
-ticktock(); print 6, a.value, b.value, c.value, d.value, out.value, out_.value
-
+sim.power_up(); print 0, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.initialize(load, False)
+sim.initialize(inp, False)
+sim.ticktock(); print 1, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.initialize(load, True)
+sim.ticktock(); print 2, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.initialize(load, False)
+sim.ticktock(); print 3, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.initialize(load, True)
+sim.initialize(inp, True)
+sim.ticktock(); print 4, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.initialize(load, False)
+sim.ticktock(); print 5, a.value, b.value, c.value, d.value, out.value, out_.value
+sim.ticktock(); print 6, a.value, b.value, c.value, d.value, out.value, out_.value
