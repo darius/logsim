@@ -1,3 +1,7 @@
+"""
+Basic components of a circuit, and simulating their behavior.
+"""
+
 def power_up():
     agenda.clear()
     initialize(lo, 0)
@@ -67,7 +71,7 @@ def nand(in1, in2):
 def DFF(in_):
     out = Wire()
     def propagate(agenda, coarse_agenda):
-        coarse_agenda[out] = in_.value # XXX
+        coarse_agenda[out] = in_.value # XXX test me more
     in_.acquaint(propagate)
     return out
 
