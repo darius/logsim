@@ -42,5 +42,17 @@ def ram8(in_, load, address):
     return gates.mux8way16(*(registers + (address,)))
 
 
+def test_ram64():
+    in_, load, address = wires(16), Wire(), wires(6)
+    out = ram64(in_, load, address)
+    simtest.test(locals(), 'tests/3/a/RAM64.tst')
+
+def ram64(in_, load, address):
+    "Memory of 64 registers, each 16-bit wide."
+    rams = tuple(ram8(in_, load & select, address[-3:])
+                 for select in gates.dmux8way(hi, address[:3]))
+    return gates.mux8way16(*(rams + (address[:3],)))
+
+
 if __name__ == '__main__':
     simtest.main(globals())
