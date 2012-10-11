@@ -3,7 +3,7 @@
 
 import gates
 import logsim
-from logsim import Wire, DeferredWire, wires, DFF
+from logsim import hi, Wire, DeferredWire, wires, DFF
 import simtest
 
 
@@ -28,6 +28,18 @@ def test_register():
 def register(in_, load):
     "16-bit register."
     return tuple(bit(in_i, load) for in_i in in_)
+
+
+def test_ram8():
+    in_, load, address = wires(16), Wire(), wires(3)
+    out = ram8(in_, load, address)
+    simtest.test(locals(), 'tests/3/a/RAM8.tst')
+
+def ram8(in_, load, address):
+    "Memory of 8 registers, each 16-bit wide."
+    registers = tuple(register(in_, load & select)
+                      for select in gates.dmux8way(hi, address))
+    return gates.mux8way16(*(registers + (address,)))
 
 
 if __name__ == '__main__':

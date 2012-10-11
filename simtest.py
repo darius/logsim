@@ -124,7 +124,7 @@ class Tester:
         write_list(self.out, specs)
 
     def eval(self):
-        self.sim.ticktock()
+        self.sim.propagate()
 
     def tick(self):
         self.sim.tick()
