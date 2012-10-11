@@ -84,15 +84,24 @@ class Tester:
     def parse_output_spec(self, spec_string):
         label, rest = spec_string.split('%')
         base = rest[0]
-        assert base in 'BS', spec_string
+        assert base in 'BDS', spec_string
         lpadding, width, rpadding = map(int, rest[1:].split('.'))
+        # TODO: separate the column padding from the to-string formatting
         if base == 'B':
             def format(value):
+                return center(lpadding + width + rpadding, value)
+        elif base == 'D':
+            def format(value):
+                if value.isdigit(): # i.e. it's not a label
+                    v = int(value, 2)
+                    if 2**15 <= v:
+                        v -= 2**16
+                    value = '%*d' % (width, v)
                 return center(lpadding + width + rpadding, value)
         elif base == 'S':
             def format(value):
                 s = str(value)
-                return spaces(lpadding) + s + spaces(rpadding + (width - len(s)))
+                return spaces(lpadding) + s + spaces(width - len(s) + rpadding)
         return label, format
 
     def parse_set(self, label, literal):
@@ -169,6 +178,11 @@ def base2(n):
     assert 0 <= n
     digit = str(n % 2)
     return digit if n < 2 else base2(n // 2) + digit
+
+def bits_to_value(wires):
+    values = [int(wire.value) for wire in wires]
+    binary_numeral = ''.join(map(str, reversed(values)))
+    return int(binary_numeral, 2)
 
 def spaces(n):
     return ' ' * n
