@@ -122,4 +122,12 @@ def DFF(in_):
 def wires(n):
     return tuple(Wire() for i in range(n))
 
+def deferred_wires(n):
+    return tuple(DeferredWire() for i in range(n))
+
+def resolve(deferred_wires, wires):
+    for dw, w in zip(deferred_wires, wires):
+        dw.resolve(w)
+    return wires
+    
 lo, hi = wires(2)

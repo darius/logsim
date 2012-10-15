@@ -8,8 +8,13 @@ output-file PC.out,
 compare-to PC.cmp,
 output-list time%S1.4.1 in%D1.6.1 reset%B2.1.2 load%B2.1.2 inc%B2.1.2 out%D1.6.1;
 
+// (I added 'set reset 1' to mostly mask logsim's divergence from
+// TECS. The TECS HDL simulator makes all signals initially 0, while in
+// logsim they're undetermined ('?'). By explicitly resetting the
+// register at the start, we limit the difference in the trace to just
+// that reset signal. TODO: something less hacky.)
 set in 0,
-set reset 0,
+set reset 1,
 set load 0,
 set inc 0,
 tick,
@@ -18,6 +23,7 @@ output;
 tock,
 output;
 
+set reset 0,    // (to undo the above hack)
 set inc 1,
 tick,
 output;
