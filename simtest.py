@@ -43,7 +43,9 @@ class Tester:
             line = line.strip()
             if not line:
                 continue
-            self.run1(line)
+            for command in line.split(','):
+                if command.strip():
+                    self.run1(command)
         self.out.close()
         if self.ref_filename is not None:
             self.check()
@@ -133,7 +135,7 @@ class Tester:
         self.sim.tock()
 
     def output(self):
-        self.env['time'] = FakeWire(self.sim.get_time())
+        self.env['time'] = FakeWire(self.sim.get_time().lstrip())
         x = [(var_value(self.env[label]), format)
              for (label, format) in self.output_specs]
         write_list(self.out, x)

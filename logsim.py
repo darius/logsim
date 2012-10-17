@@ -7,10 +7,12 @@ class Sim:
     def __init__(self):
         self.agenda = {}
         self.tock_agenda = {}
+        self.watchlist = []
+        self.show_labels = True
         self.power_up()
 
     def get_time(self):
-        return '%s%s' % (self.time, self.phase)
+        return '%2d%s' % (self.time, self.phase)
 
     def power_up(self):
         self.agenda.clear()
@@ -22,6 +24,28 @@ class Sim:
     def initialize(self, wire, value):
         wire.value = '?'
         self.agenda[wire] = value
+
+    def watch(self, thing, name=None):
+        self.watchlist.append((thing, name))
+        self.show_labels = True
+
+    def show_watched(self):
+        if self.watchlist:
+            labels = [' T ']
+            values = [self.get_time()]
+            for thing, name in self.watchlist:
+                if isinstance(thing, tuple):
+                    value = ''.join(str(w.value) for w in reversed(thing))
+                else:
+                    value = str(thing.value)
+                label = name or thing.name
+                width = max(len(label), len(value))
+                labels.append(right_justify(label, width))
+                values.append(right_justify(value, width))
+            if self.show_labels:
+                print ' '.join(labels)
+                self.show_labels = False
+            print ' '.join(values)
 
     def ticktock(self):
         self.propagate()
@@ -46,9 +70,13 @@ class Sim:
             self.agenda = {}
             for gate in dirty:
                 gate(self.agenda, self.tock_agenda)
+        self.show_watched()
 
     # XXX should this be a separate method?
     set = initialize
+
+def right_justify(s, width):
+    return '%*s' % (width, s)
 
 class Wire:
 
