@@ -3,6 +3,8 @@ Tabulate all possible inputs to a combinational circuit, together
 with its output in each case.
 """
 
+from itertools import product
+
 import logsim
 
 def tabulate(in_wires, out_wires):
@@ -17,13 +19,7 @@ def wire_values(wires):
     return [wire.value for wire in wires]
 
 def truth_table(wires):
-    if not wires:
-        yield ()
-    else:
-        w = wires[0]
-        for values in truth_table(wires[1:]):
-            yield (0,) + values
-            yield (1,) + values
+    return product(*[(0, 1)]*len(wires))
 
 
 if True:
@@ -37,4 +33,3 @@ if True:
     print ''
     tabulate([a, b], [a ^ b])
     print ''
-
