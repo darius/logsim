@@ -39,10 +39,7 @@ class Tester:
         self.test_file = file
         self.out = open('output.cmp', 'w')
         for line in file:
-            line = re.sub(r'//.*', '', line)
-            line = line.strip()
-            if not line:
-                continue
+            line = re.sub(r'//.*', '', line).strip()
             for command in line.split(','):
                 if command.strip():
                     self.run1(command)
