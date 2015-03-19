@@ -165,7 +165,7 @@ def to_string(value):
     if isinstance(value, str):
         return value
     elif isinstance(value, bool):
-        return str(int(value))
+        return '01'[value]
     elif isinstance(value, int):
         return base2(value)
     elif isinstance(value, tuple):
@@ -175,8 +175,7 @@ def to_string(value):
 
 def base2(n):
     assert 0 <= n
-    digit = str(n % 2)
-    return digit if n < 2 else base2(n // 2) + digit
+    return bin(n)[2:]
 
 def bits_to_value(wires):
     values = [int(wire.value) for wire in wires]
