@@ -117,7 +117,7 @@ def mux16(a, b, sel):
 def test_or8way():
     in_ = wires(8)
     out = or8way(in_)
-    simtest.test(locals(), 'tests/1/Or8way.tst')
+    simtest.test(locals(), 'tests/1/Or8Way.tst')
 
 def or8way(in_):
     assert 8 == len(in_)
@@ -133,7 +133,7 @@ def test_mux4way16():
     d = wires(16)
     sel = wires(2)
     out = mux4way16(a, b, c, d, sel)
-    simtest.test(locals(), 'tests/1/Mux4way16.tst')
+    simtest.test(locals(), 'tests/1/Mux4Way16.tst')
 
 def mux4way16(a, b, c, d, sel):
     assert (16, 16, 16, 16) == (len(a), len(b), len(c), len(d))
@@ -154,7 +154,7 @@ def test_mux8way16():
     h = wires(16)
     sel = wires(3)
     out = mux8way16(a, b, c, d, e, f, g, h, sel)
-    simtest.test(locals(), 'tests/1/Mux8way16.tst')
+    simtest.test(locals(), 'tests/1/Mux8Way16.tst')
 
 def mux8way16(a, b, c, d, e, f, g, h, sel):
     assert [16] * 8 == map(len, [a, b, c, d, e, f, g, h])
@@ -168,7 +168,7 @@ def test_dmux4way():
     in_ = Wire()
     sel = wires(2)
     a, b, c, d = dmux4way(in_, sel)
-    simtest.test(locals(), 'tests/1/DMux4way.tst')
+    simtest.test(locals(), 'tests/1/DMux4Way.tst')
 
 def dmux4way(in_, sel):
     "if sel=00 then 000/in else ... if sel=11 then in/000"
@@ -181,7 +181,7 @@ def test_dmux8way():
     in_ = Wire()
     sel = wires(3)
     a, b, c, d, e, f, g, h = dmux8way(in_, sel)
-    simtest.test(locals(), 'tests/1/DMux8way.tst')
+    simtest.test(locals(), 'tests/1/DMux8Way.tst')
 
 def dmux8way(in_, sel):
     """if sel=000 then 0000000/in else ...
