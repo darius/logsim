@@ -16,13 +16,13 @@ def tabulate(in_wires, out_wires):
         print ' '.join(map(str, wire_values(in_wires) + wire_values(out_wires)))
 
 def wire_values(wires):
-    return [wire.value for wire in wires]
+    return tuple(wire.value for wire in wires)
 
 def truth_table(wires):
     return product(*[(0, 1)]*len(wires))
 
 
-if True:
+if __name__ == '__main__':
     a = logsim.Wire()
     b = logsim.Wire()
     tabulate([a, b], [logsim.nand(a, b)])
